@@ -1,0 +1,25 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 70,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "files.exclude": {
+    "**/frontend/node_modules/**": true,
+    "**/frontend/build/**": true,
+    "**/.next/**": true,
+    "**/.prettier*": true,
+    "**/.husky": true,
+    "**/node_modules/": false,
+    "**/package-lock.json": true,
+    "**/.eslintrc.json": false,
+    "**/.lintstagedrc": true,
+    "**/next-env.d.ts": true,
+    "**/next.config.js": true,
+    "**/tsconfig.tsbuildinfo": true,
+    "**/.claude/**": true,
+    "**/*~": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  }
+}
