@@ -28,12 +28,7 @@ interface PaymentControlsProps {
   onFailure: (message: string) => void;
 }
 
-export function PaymentControls({
-  contractAddress,
-  networkId,
-  onSuccess,
-  onFailure,
-}: PaymentControlsProps) {
+export function PaymentControls({ contractAddress, networkId, onSuccess, onFailure }: PaymentControlsProps) {
   const [transactionInProgress, setTransactionInProgress] = useState(false);
   const assetContextDispatch = useAssetContextDispatch();
   const { client } = useSmartWallets();
@@ -45,28 +40,21 @@ export function PaymentControls({
     transport: http(BASE_MAINNET_RPC_URL),
   });
 
-  const usdcTokenAddress = USDC_TOKEN_ADDRESSES[
-    networkId as keyof typeof USDC_TOKEN_ADDRESSES
-  ] as Hex;
+  const usdcTokenAddress = USDC_TOKEN_ADDRESSES[networkId as keyof typeof USDC_TOKEN_ADDRESSES] as Hex;
 
-  // Fetch the price for this asset
   const priceQuery = useQuery({
     queryKey: ["price", contractAddress, SHARE_PROTOCOL_ADDRESS],
     queryFn: async () => {
-      console.log(SHARE_PROTOCOL_ADDRESS);
-      console.log(publicClient);
       const price = await publicClient.readContract({
         address: getAddress(SHARE_PROTOCOL_ADDRESS as Hex),
         abi: shareContractAbi,
         functionName: "grossPricePerAccess",
         args: [getAddress(contractAddress as Hex), BigInt(0)],
       });
-      console.log(price);
       return price as bigint;
     },
   });
 
-  // Fetch the user's USDC balance
   const balanceQuery = useQuery({
     queryKey: ["balance", client?.account?.address, networkId],
     queryFn: async () => {
@@ -84,13 +72,9 @@ export function PaymentControls({
     refetchInterval: 5000,
   });
 
-  // Update asset context with price
   useEffect(() => {
     if (priceQuery.data) {
-      assetContextDispatch({
-        type: "ASSET_SET_ASSET_PRICE",
-        assetPrice: priceQuery.data,
-      });
+      assetContextDispatch({ type: "ASSET_SET_ASSET_PRICE", assetPrice: priceQuery.data });
     }
   }, [priceQuery.data, assetContextDispatch]);
 
@@ -101,7 +85,6 @@ export function PaymentControls({
     try {
       const hash = await client.sendTransaction({
         calls: [
-          // Step 1: Approve USDC spending
           {
             to: usdcTokenAddress,
             data: encodeFunctionData({
@@ -110,7 +93,6 @@ export function PaymentControls({
               args: [SHARE_PROTOCOL_ADDRESS as Hex, priceQuery.data],
             }),
           },
-          // Step 2: Purchase access
           {
             to: SHARE_PROTOCOL_ADDRESS as Hex,
             data: encodeFunctionData({
@@ -127,7 +109,6 @@ export function PaymentControls({
       });
       onSuccess(hash as string);
     } catch (error) {
-      console.error(error);
       onFailure(error instanceof Error ? error.message : "Transaction failed");
     } finally {
       setTransactionInProgress(false);
@@ -143,54 +124,36 @@ export function PaymentControls({
         chain: SUPPORTED_CHAINS.base,
         amount: formatUnits(priceQuery.data, 6),
         asset: "USDC" as const,
-        uiConfig: {
-          receiveFundsTitle: "Transfer USDC (crypto) to your wallet",
-        },
+        uiConfig: { receiveFundsTitle: "Transfer USDC (crypto) to your wallet" },
       },
     });
   };
 
-  const hasInsufficientBalance =
-    balanceQuery.data && priceQuery.data && balanceQuery.data < priceQuery.data;
+  const hasInsufficientBalance = balanceQuery.data && priceQuery.data && balanceQuery.data < priceQuery.data;
 
-  // Don't show anything if there's no price or price is free
   if (!priceQuery.data || priceQuery.data === BigInt(0)) {
-    return <h1>free</h1>
+    return <p className="text-sm text-zinc-600">This item is free.</p>;
   }
 
-  // Show sign in button if user is not logged in
   if (!client?.account?.address) {
-    console.log("not logged in");
     return (
       <div className="mx-auto w-full max-w-[400px]" data-cy="pay-for-access-options">
-        <Button
-          variant="primary"
-          label="Sign In"
-          onClick={login}
-        />
+        <Button variant="primary" label="Sign in to continue" onClick={login} />
       </div>
     );
   }
 
-  // Show add funds button if user doesn't have enough balance
   if (hasInsufficientBalance) {
-    console.log("insufficient balance");
     return (
       <div className="mx-auto w-full max-w-[400px]" data-cy="pay-for-access-options">
         <div className="flex flex-col gap-3">
           <BalanceCard balance={balanceQuery.data} price={priceQuery.data} />
-          <Button
-            variant="primary"
-            label="Add Funds"
-            onClick={handleAddFunds}
-          />
+          <Button variant="primary" label={`Add funds (${formatUSDCPrice(priceQuery.data)})`} onClick={handleAddFunds} />
         </div>
       </div>
     );
   }
 
-  // Show purchase button
-  console.log("purchase button");
   return (
     <div className="mx-auto w-full max-w-[400px]" data-cy="pay-for-access-options">
       <div className="flex flex-col gap-3">

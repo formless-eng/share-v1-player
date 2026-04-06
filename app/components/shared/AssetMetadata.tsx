@@ -1,8 +1,3 @@
-/**
- * Reusable component for displaying asset metadata
- * Shows title, artist, release year, and preview badge
- */
-
 'use client';
 
 import { FC } from "react";
@@ -28,25 +23,19 @@ export const AssetMetadata: FC<AssetMetadataProps> = ({
 }) => {
   const titleSizeClass = {
     sm: "text-xl",
-    md: "text-[22px]",
+    md: "text-2xl",
     lg: "text-3xl",
   }[titleSize];
 
   return (
     <div className={className}>
-      <h1 className={`${titleSizeClass} font-bold my-1`}>
-        {title || "UNTITLED"}
+      <h1 className={`${titleSizeClass} font-semibold tracking-tight text-zinc-950`}>
+        {title || "Untitled"}
       </h1>
-      <div className="flex items-center gap-2 text-sm text-gray-400">
-        <div className="flex items-center gap-2">
-          <span
-            className={`text-foreground-primary font-semibold text-xs`}>{artist || "ARTIST"}</span></div>
+      <div className="mt-1 flex items-center gap-2 text-sm text-zinc-600">
+        <span className="font-medium text-zinc-700">{artist || "Unknown artist"}</span>
+        {isPreview && <span className="rounded-full border border-zinc-300 px-2 py-0.5 text-xs text-zinc-500">Preview</span>}
       </div>
-      {isPreview && (
-        <>
-          <span className="text-gray-400">PREVIEW</span>
-        </>
-      )}
     </div>
   );
 };

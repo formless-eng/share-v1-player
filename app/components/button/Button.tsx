@@ -1,35 +1,24 @@
 import classNames from "classnames";
 
 export const Button = ({
-    variant,
-    label,
-    onClick,
+  variant,
+  label,
+  onClick,
 }: {
-    variant: "primary" | "secondary";
-    label: string;
-    onClick: () => void;
+  variant: "primary" | "secondary";
+  label: string;
+  onClick: () => void;
 }) => (
-    <button
-        className={classNames(
-            "text-button group flex h-auto items-center justify-center overflow-hidden px-6 py-3 outline-none transition duration-300",
-            {
-                "rounded-full border border-light bg-white hover:bg-light hover:text-dark":
-                    variant === "primary",
-                "rounded-full border border-light bg-light shadow-none hover:bg-light/5":
-                    variant === "secondary",
-            },
-        )}
-        onClick={onClick}
-    >
-        <span
-            className={classNames("text-base transition duration-200", {
-                "text-light group-hover:text-dark group-hover:[&>svg>line]:stroke-black":
-                    variant === "primary",
-                "text-dark group-hover:[&>svg>line]:stroke-light":
-                    variant === "secondary",
-            })}
-        >
-            {label}
-        </span>
-    </button>
+  <button
+    className={classNames(
+      "inline-flex w-full items-center justify-center rounded-full border px-5 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900/20",
+      {
+        "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800": variant === "primary",
+        "border-zinc-300 bg-white text-zinc-900 hover:border-zinc-400": variant === "secondary",
+      },
+    )}
+    onClick={onClick}
+  >
+    {label}
+  </button>
 );

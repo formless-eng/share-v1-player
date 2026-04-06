@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Share v1 Player
 
-## Getting Started
+A minimal Next.js player for tokenized music and video assets on Base.
 
-First, run the development server:
+- Hosted player: http://share-v1-player.vercel.app
+- Example music asset: https://share-v1-player.vercel.app/assets/base/0x4754FE39AFAE67F886088774A047607CC6CFA693
+
+## What this repository does
+
+The app loads metadata for an asset contract, verifies access, and renders one of three experiences:
+
+1. **Audio** (`AudioView`)
+2. **Video** (`VideoView`)
+3. **Collection / playlist** (`CollectionView`)
+
+It also provides wallet login and USDC payment controls when access is required.
+
+## How to read the code
+
+Start here, in order:
+
+1. **App shell + providers**
+   - `app/layout.tsx` sets up React Query, Privy auth, wallet providers, and the hidden global player.
+2. **Route entry points**
+   - `app/page.tsx` is the landing page.
+   - `app/assets/[assetChainName]/[contractAddress]/page.tsx` routes asset URLs to the player page.
+3. **Asset page orchestration**
+   - `app/pages/asset_page/AssetPage.tsx` fetches metadata/grants and chooses the correct media view.
+4. **Data + state flows**
+   - `app/hooks/useAssetData.ts` fetches onchain + signed metadata.
+   - `app/hooks/useUpdateAssetContext.ts` syncs fetched data into app state.
+   - `app/contexts/AssetContext.tsx` and `app/contexts/PlayerContext.tsx` hold global state.
+5. **Media UIs**
+   - `app/components/audio_view/*`
+   - `app/components/video_view/*`
+   - `app/components/collection_view/*`
+6. **Payments + constants**
+   - `app/pages/asset_page/PaymentControls.tsx`
+   - `app/lib/constants.ts` and `app/lib/utils.ts`
+
+## Build your own player
+
+### 1) Prerequisites
+
+- Node.js 20+
+- npm 10+
+
+### 2) Install
+
+```bash
+npm install
+```
+
+### 3) Configure environment
+
+Create `.env.local`:
+
+```bash
+NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+```
+
+Optional (if you want to customize network/contracts), update constants in:
+
+- `app/lib/constants.ts`
+
+### 4) Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5) Build for production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Customization tips
 
-To learn more about Next.js, take a look at the following resources:
+- **Branding / visuals:** edit Tailwind classes in `app/components/*` and global styles in `app/globals.css`.
+- **Supported chains:** extend chain mappings and RPC config in `app/lib/constants.ts`.
+- **Purchase flow:** adjust transaction behavior in `app/pages/asset_page/PaymentControls.tsx`.
+- **Metadata shaping:** normalize API responses in `app/hooks/useUpdateAssetContext.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT (see `LICENSE`).

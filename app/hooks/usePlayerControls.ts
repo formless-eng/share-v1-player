@@ -4,10 +4,7 @@
  */
 
 import { useCallback } from "react";
-import {
-  usePlayerContext,
-  usePlayerContextDispatch,
-} from "@/app/contexts/PlayerContext";
+import { usePlayerContextDispatch } from "@/app/contexts/PlayerContext";
 
 interface PlayerMetadata {
   url: string | null;
@@ -26,7 +23,6 @@ interface QueueItem {
 }
 
 export function usePlayerControls() {
-  const playerContext = usePlayerContext();
   const dispatch = usePlayerContextDispatch();
 
   // Play a single audio track (not part of a collection)
@@ -72,7 +68,6 @@ export function usePlayerControls() {
         contractAddress,
         networkId,
       });
-      console.log("playing", playerContext.playing);
       dispatch({ type: "PLAYER_SET_PLAYING", playing: true });
     },
     [dispatch],
