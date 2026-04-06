@@ -7,8 +7,8 @@
 'use client';
 
 import { FC, lazy, Suspense, useRef } from "react";
-import { useAssetContext } from "../../contexts/AssetContext";
-import { useAutoplay } from "../../hooks/useAutoplay";
+import { useAssetContext } from "@/app/contexts/AssetContext";
+import { useAutoplay } from "@/app/hooks/useAutoplay";
 
 const ReactPlayer = lazy(() => import("react-player"));
 

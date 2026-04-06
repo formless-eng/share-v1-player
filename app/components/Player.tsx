@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from "react";
-import { usePlayerContext, usePlayerContextDispatch } from "../contexts/PlayerContext";
+import { usePlayerContext, usePlayerContextDispatch } from "@/app/contexts/PlayerContext";
 
 export const Player = () => {
   const playerContext = usePlayerContext();

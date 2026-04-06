@@ -9,12 +9,12 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 
-import { useAssetContext } from "../../contexts/AssetContext";
-import { usePlayerContext } from "../../contexts/PlayerContext";
-import { useAutoplay } from "../../hooks/useAutoplay";
-import { usePlayerControls } from "../../hooks/usePlayerControls";
-import { Button } from "../button/Button";
-import { AssetMetadata } from "../shared/AssetMetadata";
+import { useAssetContext } from "@/app/contexts/AssetContext";
+import { usePlayerContext } from "@/app/contexts/PlayerContext";
+import { useAutoplay } from "@/app/hooks/useAutoplay";
+import { usePlayerControls } from "@/app/hooks/usePlayerControls";
+import { Button } from "@/app/components/button/Button";
+import { AssetMetadata } from "@/app/components/shared/AssetMetadata";
 
 export const AudioView: FC = () => {
   // Get asset and player state

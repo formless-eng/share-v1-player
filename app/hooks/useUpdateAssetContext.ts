@@ -3,9 +3,9 @@
  */
 
 import { useEffect } from "react";
-import { useAssetContextDispatch } from "../contexts/AssetContext";
-import { MEDIA_TYPES } from "../lib/constants";
-import { getAssetArtworkUri, getAssetFileUri } from "../lib/utils";
+import { useAssetContextDispatch } from "@/app/contexts/AssetContext";
+import { MEDIA_TYPES } from "@/app/lib/constants";
+import { getAssetArtworkUri, getAssetFileUri } from "@/app/lib/utils";
 
 export function useUpdateAssetContext(
   assetData: any,

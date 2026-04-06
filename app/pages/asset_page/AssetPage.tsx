@@ -2,24 +2,24 @@
 
 import { useParams } from "next/navigation";
 
-import { AudioView } from "../../components/audio_view/AudioView";
-import { CollectionView } from "../../components/collection_view/CollectionView";
-import { VideoView } from "../../components/video_view/VideoView";
-import { useAssetContext } from "../../contexts/AssetContext";
-import { PaymentControls } from "./PaymentControls";
+import { AudioView } from "@/app/components/audio_view/AudioView";
+import { CollectionView } from "@/app/components/collection_view/CollectionView";
+import { VideoView } from "@/app/components/video_view/VideoView";
+import { useAssetContext } from "@/app/contexts/AssetContext";
+import { PaymentControls } from "@/app/pages/asset_page/PaymentControls";
 
 import {
   useAssetGrant,
   useAssetMetadata,
   useAssetSignature,
-} from "../../hooks/useAssetData";
-import { useUpdateAssetContext } from "../../hooks/useUpdateAssetContext";
+} from "@/app/hooks/useAssetData";
+import { useUpdateAssetContext } from "@/app/hooks/useUpdateAssetContext";
 import {
   LIFETIME_ACCESS_SEC,
   MEDIA_TYPES,
   SERVER_AUTH_MESSAGE,
   getNetworkIdFromChainName,
-} from "../../lib/constants";
+} from "@/app/lib/constants";
 import {
   isAccessPaid,
   isAssetReleased,
@@ -27,7 +27,7 @@ import {
   isCollection,
   isVideo,
   makeSignedTokenURI,
-} from "../../lib/utils";
+} from "@/app/lib/utils";
 
 // ============================================================================
 // BACKWARD COMPATIBILITY EXPORTS

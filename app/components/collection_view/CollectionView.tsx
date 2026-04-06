@@ -5,18 +5,18 @@ import { useQuery } from "@tanstack/react-query";
 import { FC, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { createPublicClient, formatUnits, getAddress, Hex, http } from "viem";
-import pfaContractAbi from "../../abi/PFA.json";
-import { CollectionItemView } from "../../components/collection_view/CollectionItemView";
+import pfaContractAbi from "@/app/abi/PFA.json";
+import { CollectionItemView } from "@/app/components/collection_view/CollectionItemView";
 import {
   useAssetContext,
   useAssetContextDispatch,
-} from "../../contexts/AssetContext";
+} from "@/app/contexts/AssetContext";
 import {
   BASE_MAINNET_RPC_URL,
   SERVER_AUTH_MESSAGE,
   SUPPORTED_CHAINS,
-} from "../../lib/constants";
-import { makeSignedTokenURI } from "../../lib/utils";
+} from "@/app/lib/constants";
+import { makeSignedTokenURI } from "@/app/lib/utils";
 interface IPlaylistViewProps {
   preview: boolean;
   assetList: {

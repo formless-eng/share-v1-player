@@ -6,9 +6,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { base } from 'viem/chains';
 
-import { Player } from './components/Player';
-import { AssetContextProvider } from './contexts/AssetContext';
-import { PlayerContextProvider } from './contexts/PlayerContext';
+import { Player } from '@/app/components/Player';
+import { AssetContextProvider } from '@/app/contexts/AssetContext';
+import { PlayerContextProvider } from '@/app/contexts/PlayerContext';
 
 import './globals.css';
 

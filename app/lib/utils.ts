@@ -3,9 +3,9 @@
  * Following Next.js best practices for helper functions
  */
 
-import { IAssetContextProps } from "@/contexts/AssetContext";
+import { IAssetContextProps } from "@/app/contexts/AssetContext";
 import { getAddress, Hex } from "viem";
-import { LIFETIME_ACCESS_SEC, MEDIA_TYPES } from "./constants";
+import { LIFETIME_ACCESS_SEC, MEDIA_TYPES } from "@/app/lib/constants";
 
 // ============================================================================
 // URL & TOKEN URI UTILITIES
