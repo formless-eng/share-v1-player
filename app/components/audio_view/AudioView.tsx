@@ -1,55 +1,25 @@
-/**
- * Audio View Component
- * Displays audio assets with artwork, metadata, and playback controls
- * Refactored for clarity and simplicity
- */
-
 'use client';
 
-import { FC, useCallback, useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
+import { FC, useCallback } from "react";
 
+import { Button } from "@/app/components/button/Button";
+import { AssetMetadata } from "@/app/components/shared/AssetMetadata";
 import { useAssetContext } from "@/app/contexts/AssetContext";
 import { usePlayerContext } from "@/app/contexts/PlayerContext";
 import { useAutoplay } from "@/app/hooks/useAutoplay";
 import { usePlayerControls } from "@/app/hooks/usePlayerControls";
-import { Button } from "@/app/components/button/Button";
-import { AssetMetadata } from "@/app/components/shared/AssetMetadata";
 
 export const AudioView: FC = () => {
-  // Get asset and player state
   const assetContext = useAssetContext();
   const playerContext = usePlayerContext();
   const { playSingleTrack, playFromQueue, pause } = usePlayerControls();
-
-  // Track if this asset is currently playing
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  // Determine if this is a preview (user hasn't paid)
   const isPreview = !assetContext.contractGrantActive && Number(assetContext.assetPrice) !== 0;
+  const isPlaying =
+    assetContext.contractAddress === playerContext.contractAddress && playerContext.playing;
 
-  // Sync local playing state with global player state
-  useEffect(() => {
-    const run = async () => {
-      const isThisAssetPlaying =
-        assetContext.contractAddress === playerContext.contractAddress &&
-        playerContext.playing;
-      setIsPlaying(isThisAssetPlaying);
-    }
-    run();
-  }, [
-    assetContext.contractAddress,
-    playerContext.contractAddress,
-    playerContext.playing,
-  ]);
 
-  // Play button click handler
   const handlePlay = useCallback(() => {
-    const isAudio = assetContext.assetMediaType === "audio";
-    const isCollection = assetContext.assetMediaType === "collection";
-
-    if (isAudio) {
-      // Play single audio track
+    if (assetContext.assetMediaType === "audio") {
       playSingleTrack({
         url: assetContext.assetFileUri,
         artist: assetContext.assetArtist,
@@ -58,54 +28,34 @@ export const AudioView: FC = () => {
         contractAddress: assetContext.contractAddress,
         networkId: assetContext.networkId,
       });
-    } else if (isCollection && assetContext.assetQueue.length > 0) {
-      // Play from collection/playlist
-      const queueIndex = playerContext.assetQueueIndex || 0;
+    } else if (assetContext.assetMediaType === "collection" && assetContext.assetQueue.length > 0) {
       playFromQueue(
         assetContext.assetQueue,
-        queueIndex,
+        playerContext.assetQueueIndex || 0,
         assetContext.contractAddress,
-        assetContext.networkId
+        assetContext.networkId,
       );
     }
-  }, [
-    assetContext.assetMediaType,
-    assetContext.assetFileUri,
-    assetContext.assetArtist,
-    assetContext.assetTitle,
-    assetContext.assetArtworkUri,
-    assetContext.contractAddress,
-    assetContext.networkId,
-    assetContext.assetQueue,
-    playerContext.assetQueueIndex,
-    playSingleTrack,
-    playFromQueue,
-  ]);
+  }, [assetContext, playerContext.assetQueueIndex, playFromQueue, playSingleTrack]);
 
-  // Handle autoplay if requested
   useAutoplay({
     shouldAutoplay: assetContext.autoPlay,
     playerRef: playerContext.playerRef,
     onPlay: handlePlay,
   });
 
-  const padding = isMobile ? "px-4" : "px-6";
-
   return (
-    <div className={`w-full max-w-3xl mx-auto ${padding}`}>
-      <div className={`${isMobile ? "" : "mt-6"} rounded-lg overflow-hidden`}>
-        <div className={`${isMobile ? "p-6" : "p-8"} flex flex-col md:flex-row ${isMobile ? "" : "gap-6"}`}>
-          {/* Album Artwork */}
-          <div>
-            <img
-              src={assetContext.assetArtworkUri || ""}
-              alt={assetContext.assetTitle || "Album artwork"}
-              height={200}
-              width={200}
-            />
-          </div>
-          {/* Metadata and Controls */}
-          <div className="flex sm:flex-col justify-between flex-grow">
+    <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+      <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-7">
+        <div className="flex flex-col gap-6 sm:flex-row">
+          <img
+            src={assetContext.assetArtworkUri || ""}
+            alt={assetContext.assetTitle || "Album artwork"}
+            height={220}
+            width={220}
+            className="aspect-square w-full max-w-[220px] rounded-2xl border border-zinc-200 object-cover"
+          />
+          <div className="flex flex-1 flex-col justify-between gap-5">
             <AssetMetadata
               title={assetContext.assetTitle}
               artist={assetContext.assetArtist}
@@ -113,20 +63,14 @@ export const AudioView: FC = () => {
               isPreview={isPreview}
               creatorDisplayName={assetContext.creatorDisplayName}
               creatorUniqueId={assetContext.creatorUniqueId}
-              titleSize={isMobile ? "sm" : "lg"}
+              titleSize="lg"
             />
-
-            {/* Play/Pause Button */}
-            <div className="flex items-center">
-              <Button variant="primary" onClick={
-                () => {
-                  if (isPlaying) {
-                    pause();
-                  } else {
-                    handlePlay();
-                  }
-                }
-              } label={isPlaying ? "Pause" : "Play"} />
+            <div className="max-w-[220px]">
+              <Button
+                variant="primary"
+                onClick={() => (isPlaying ? pause() : handlePlay())}
+                label={isPlaying ? "Pause" : "Play"}
+              />
             </div>
           </div>
         </div>
