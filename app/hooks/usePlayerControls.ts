@@ -7,7 +7,7 @@ import { useCallback } from "react";
 import {
   usePlayerContext,
   usePlayerContextDispatch,
-} from "../contexts/PlayerContext";
+} from "@/app/contexts/PlayerContext";
 
 interface PlayerMetadata {
   url: string | null;

@@ -7,8 +7,8 @@
 'use client';
 
 import { FC, lazy, Suspense, useRef } from "react";
-import { useAssetContext } from "../../contexts/AssetContext";
-import { useAutoplay } from "../../hooks/useAutoplay";
+import { useAssetContext } from "@/app/contexts/AssetContext";
+import { useAutoplay } from "@/app/hooks/useAutoplay";
 
 const ReactPlayer = lazy(() => import("react-player"));
 
@@ -40,10 +40,10 @@ export const VideoPlayer: FC = () => {
       <Suspense fallback={<div style={{ display: "none" }} />}>
         <ReactPlayer
           ref={videoPlayerRef}
-          url={assetContext.assetFileUri as string}
+          src={assetContext.assetFileUri as string}
           playing={true}
           controls={true}
-          playsinline={true}
+          playsInline={true}
           volume={1}
           muted={true}
           loop={true}
@@ -51,21 +51,8 @@ export const VideoPlayer: FC = () => {
           height="100%"
           onStart={handleOnStart}
           config={{
-            file: {
-              hlsVersion: "0.12.4",
-              hlsOptions: {
-                startLevel: HLS_MAX_START_LEVEL,
-              },
-              attributes: {
-                autoPlay: true,
-                controlsList: "nodownload",
-                style: {
-                  objectFit: "contain",
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "black",
-                },
-              },
+            hls: {
+              startLevel: HLS_MAX_START_LEVEL,
             },
           }}
         />

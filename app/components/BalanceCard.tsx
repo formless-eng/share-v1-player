@@ -1,6 +1,6 @@
 'use client';
 
-import { formatUSDCPrice } from "../lib/utils";
+import { formatUSDCPrice } from "@/app/lib/utils";
 
 /**
  * A card that displays the user's USDC balance and the item price

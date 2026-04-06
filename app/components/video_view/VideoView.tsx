@@ -9,10 +9,10 @@
 import { FC, useEffect } from "react";
 import { isMobile } from "react-device-detect";
 
-import { VideoPlayer } from "../../components/video_player/VideoPlayer";
-import { useAssetContext } from "../../contexts/AssetContext";
-import { usePlayerContextDispatch } from "../../contexts/PlayerContext";
-import { AssetMetadata } from "../shared/AssetMetadata";
+import { VideoPlayer } from "@/app/components/video_player/VideoPlayer";
+import { useAssetContext } from "@/app/contexts/AssetContext";
+import { usePlayerContextDispatch } from "@/app/contexts/PlayerContext";
+import { AssetMetadata } from "@/app/components/shared/AssetMetadata";
 
 export const VideoView: FC = () => {
   const playerContextDispatch = usePlayerContextDispatch();

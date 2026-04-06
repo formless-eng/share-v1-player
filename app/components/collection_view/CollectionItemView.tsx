@@ -7,9 +7,9 @@
 'use client';
 
 import { FC, useEffect, useState } from "react";
-import { useAssetContext } from "../../contexts/AssetContext";
-import { usePlayerContext } from "../../contexts/PlayerContext";
-import { usePlayerControls } from "../../hooks/usePlayerControls";
+import { useAssetContext } from "@/app/contexts/AssetContext";
+import { usePlayerContext } from "@/app/contexts/PlayerContext";
+import { usePlayerControls } from "@/app/hooks/usePlayerControls";
 
 interface CollectionItemViewProps {
   itemIndex: number;

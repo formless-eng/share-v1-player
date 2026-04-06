@@ -7,14 +7,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { createPublicClient, erc721Abi, getAddress, Hex, http } from "viem";
 
-import pfaAbi from "../abi/PFA.json";
+import pfaAbi from "@/app/abi/PFA.json";
 import {
   BASE_MAINNET_RPC_URL,
   SERVER_AUTH_MESSAGE,
   SUPPORTED_CHAINS,
   unixTimestampSeconds,
-} from "../lib/constants";
-import { isGrantActive, makeSignedTokenURI } from "../lib/utils";
+} from "@/app/lib/constants";
+import { isGrantActive, makeSignedTokenURI } from "@/app/lib/utils";
 
 /**
  * Hook to get wallet signature for authenticated requests

@@ -14,12 +14,12 @@ import {
   http,
 } from "viem";
 
-import shareContractAbi from "../../abi/SHARE.json";
-import { BalanceCard } from "../../components/BalanceCard";
-import { Button } from "../../components/button/Button";
-import { useAssetContextDispatch } from "../../contexts/AssetContext";
-import { BASE_MAINNET_RPC_URL, SHARE_PROTOCOL_ADDRESS, SUPPORTED_CHAINS, USDC_TOKEN_ADDRESSES } from "../../lib/constants";
-import { formatUSDCPrice } from "../../lib/utils";
+import shareContractAbi from "@/app/abi/SHARE.json";
+import { BalanceCard } from "@/app/components/BalanceCard";
+import { Button } from "@/app/components/button/Button";
+import { useAssetContextDispatch } from "@/app/contexts/AssetContext";
+import { BASE_MAINNET_RPC_URL, SHARE_PROTOCOL_ADDRESS, SUPPORTED_CHAINS, USDC_TOKEN_ADDRESSES } from "@/app/lib/constants";
+import { formatUSDCPrice } from "@/app/lib/utils";
 
 interface PaymentControlsProps {
   contractAddress: string;
@@ -137,12 +137,15 @@ export function PaymentControls({
   const handleAddFunds = async () => {
     if (!client?.account?.address || !priceQuery.data) return;
 
-    await fundWallet(client.account.address, {
-      chain: SUPPORTED_CHAINS.base,
-      amount: formatUnits(priceQuery.data, 6),
-      asset: "USDC" as const,
-      uiConfig: {
-        receiveFundsTitle: "Transfer USDC (crypto) to your wallet",
+    await fundWallet({
+      address: client.account.address,
+      options: {
+        chain: SUPPORTED_CHAINS.base,
+        amount: formatUnits(priceQuery.data, 6),
+        asset: "USDC" as const,
+        uiConfig: {
+          receiveFundsTitle: "Transfer USDC (crypto) to your wallet",
+        },
       },
     });
   };
