@@ -2,13 +2,14 @@
 
 import { useSmartWallets } from "@privy-io/react-auth/smart-wallets";
 import { useQuery } from "@tanstack/react-query";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { createPublicClient, formatUnits, getAddress, Hex, http } from "viem";
 
 import pfaContractAbi from "@/app/abi/PFA.json";
 import { CollectionItemView } from "@/app/components/collection_view/CollectionItemView";
 import { useAssetContext, useAssetContextDispatch } from "@/app/contexts/AssetContext";
-import { BASE_MAINNET_RPC_URL, SERVER_AUTH_MESSAGE, SUPPORTED_CHAINS } from "@/app/lib/constants";
+import { useAssetSignature } from "@/app/hooks/useAssetData";
+import { BASE_MAINNET_RPC_URL, SUPPORTED_CHAINS } from "@/app/lib/constants";
 import { makeSignedTokenURI } from "@/app/lib/utils";
 
 interface IPlaylistViewProps {
@@ -21,22 +22,13 @@ interface IPlaylistViewProps {
 export const CollectionView: FC<IPlaylistViewProps> = ({ preview, assetList = { collection: [] } }) => {
   const assetContext = useAssetContext();
   const assetContextDispatch = useAssetContextDispatch();
-  const [signature, setSignature] = useState("");
   const { client } = useSmartWallets();
+  const signature = useAssetSignature();
 
   const publicClient = createPublicClient({
     chain: SUPPORTED_CHAINS.base,
     transport: http(BASE_MAINNET_RPC_URL),
   });
-
-  useEffect(() => {
-    const run = async () => {
-      if (client?.account?.address && !signature) {
-        setSignature(await client.signMessage({ message: SERVER_AUTH_MESSAGE }));
-      }
-    };
-    run();
-  }, [client, signature]);
 
   const collectionQuery = useQuery({
     queryKey: ["collectionQuery", assetList.collection, client?.account?.address, signature],
@@ -75,6 +67,7 @@ export const CollectionView: FC<IPlaylistViewProps> = ({ preview, assetList = { 
       assetContextDispatch({ type: "ASSET_SET_ASSET_QUEUE", assetQueue: items });
       return items;
     },
+    enabled: !!signature,
   });
 
   const trackPricesQuery = useQuery({

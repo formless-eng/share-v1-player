@@ -52,7 +52,7 @@ export function AssetPage() {
           }}
         />
       ) : (
-        <p className="text-center text-sm text-zinc-600">Access already available for this wallet.</p>
+        <p className="text-center text-sm text-zinc-600">You've purchased this item.</p>
       )}
     </main>
   );
