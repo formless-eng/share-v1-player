@@ -110,7 +110,7 @@ export function useAssetMetadata(
     queryFn: async () => {
       if (!contractAddress) throw new Error("No contract address");
 
-      // Get the token URI from the NFT contract
+      // Get the token URI from the ERC721 contract
       const tokenURI = await publicClient.readContract({
         address: getAddress(contractAddress as Hex),
         abi: erc721Abi,
