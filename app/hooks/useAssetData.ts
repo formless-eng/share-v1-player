@@ -16,22 +16,76 @@ import {
 } from "@/app/lib/constants";
 import { isGrantActive, makeSignedTokenURI } from "@/app/lib/utils";
 
+const ASSET_SIGNATURE_STORAGE_KEY = "share_player_wallet_signatures";
+
+function getSavedSignature(walletAddress: string): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const cached = window.localStorage.getItem(ASSET_SIGNATURE_STORAGE_KEY);
+    if (!cached) return null;
+    const parsed = JSON.parse(cached) as Record<string, string>;
+    return parsed[walletAddress.toLowerCase()] || null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSignature(walletAddress: string, signature: string): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const cached = window.localStorage.getItem(ASSET_SIGNATURE_STORAGE_KEY);
+    const parsed = cached ? (JSON.parse(cached) as Record<string, string>) : {};
+    parsed[walletAddress.toLowerCase()] = signature;
+    window.localStorage.setItem(ASSET_SIGNATURE_STORAGE_KEY, JSON.stringify(parsed));
+  } catch {
+    // Ignore localStorage failures.
+  }
+}
+
 /**
- * Hook to get wallet signature for authenticated requests
+ * Hook to get wallet signature for authenticated metadata requests
+ * without forcing extra wallet UIs.
  */
 export function useAssetSignature() {
   const [signature, setSignature] = useState("");
   const { client } = useSmartWallets();
+  const walletAddress = client?.account?.address;
 
   useEffect(() => {
-    const getSignature = async () => {
-      if (client?.account?.address && !signature) {
-        const sig = await client.signMessage({ message: SERVER_AUTH_MESSAGE });
-        setSignature(sig);
+    if (!walletAddress) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSignature("");
+      return;
+    }
+
+    const saved = getSavedSignature(walletAddress);
+    if (saved) {
+      setSignature(saved);
+    }
+  }, [walletAddress]);
+
+  useEffect(() => {
+    if (!walletAddress || signature) return;
+
+    const sign = async () => {
+      try {
+        const nextSignature = await client?.signMessage(
+          { message: SERVER_AUTH_MESSAGE },
+          { uiOptions: { showWalletUIs: false } },
+        );
+
+        if (!nextSignature) return;
+        setSignature(nextSignature);
+        saveSignature(walletAddress, nextSignature);
+      } catch (error) {
+        console.error("Error signing auth message:", error);
       }
     };
-    getSignature();
-  }, [client?.account?.address, signature]);
+
+    sign();
+  }, [client, walletAddress, signature]);
 
   return signature;
 }
@@ -52,7 +106,7 @@ export function useAssetMetadata(
   });
 
   return useQuery({
-    queryKey: ["asset", client?.account?.address, contractAddress, signature],
+    queryKey: ["asset", client?.account?.address, contractAddress, networkId, signature],
     queryFn: async () => {
       if (!contractAddress) throw new Error("No contract address");
 
@@ -71,7 +125,7 @@ export function useAssetMetadata(
           contractAddress: contractAddress,
           networkId: networkId,
           walletAddress: client?.account?.address,
-          signature: signature,
+          signature,
         }),
       );
 

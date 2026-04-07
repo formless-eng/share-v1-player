@@ -1,6 +1,6 @@
 'use client';
 
-import { useFundWallet, useLogin } from "@privy-io/react-auth";
+import { getEmbeddedConnectedWallet, useFundWallet, useHeadlessDelegatedActions, useLogin, useWallets } from "@privy-io/react-auth";
 import { useSmartWallets } from "@privy-io/react-auth/smart-wallets";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -30,8 +30,11 @@ interface PaymentControlsProps {
 
 export function PaymentControls({ contractAddress, networkId, onSuccess, onFailure }: PaymentControlsProps) {
   const [transactionInProgress, setTransactionInProgress] = useState(false);
+  const [delegatedWalletAddress, setDelegatedWalletAddress] = useState<string | null>(null);
   const assetContextDispatch = useAssetContextDispatch();
   const { client } = useSmartWallets();
+  const { wallets } = useWallets();
+  const { delegateWallet } = useHeadlessDelegatedActions();
   const { login } = useLogin();
   const { fundWallet } = useFundWallet();
 
@@ -77,6 +80,36 @@ export function PaymentControls({ contractAddress, networkId, onSuccess, onFailu
       assetContextDispatch({ type: "ASSET_SET_ASSET_PRICE", assetPrice: priceQuery.data });
     }
   }, [priceQuery.data, assetContextDispatch]);
+
+  useEffect(() => {
+    const embeddedSignerWallet = getEmbeddedConnectedWallet(wallets);
+
+    if (!client?.account?.address || !embeddedSignerWallet?.address) return;
+    if (embeddedSignerWallet.address === delegatedWalletAddress) return;
+
+    let cancelled = false;
+
+    const delegate = async () => {
+      try {
+        await delegateWallet({
+          address: embeddedSignerWallet.address,
+          chainType: "ethereum",
+        });
+
+        if (!cancelled) {
+          setDelegatedWalletAddress(embeddedSignerWallet.address);
+        }
+      } catch (error) {
+        console.error("Failed to delegate wallet actions:", error);
+      }
+    };
+
+    delegate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [client?.account?.address, delegatedWalletAddress, delegateWallet, wallets]);
 
   const handlePurchase = async () => {
     if (!client?.account?.address || !priceQuery.data) return;
@@ -138,7 +171,7 @@ export function PaymentControls({ contractAddress, networkId, onSuccess, onFailu
   if (!client?.account?.address) {
     return (
       <div className="mx-auto w-full max-w-[400px]" data-cy="pay-for-access-options">
-        <Button variant="primary" label="Sign in to continue" onClick={login} />
+        <Button variant="primary" label="Connect wallet to buy access" onClick={login} />
       </div>
     );
   }
