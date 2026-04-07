@@ -171,7 +171,7 @@ export function PaymentControls({ contractAddress, networkId, onSuccess, onFailu
   if (!client?.account?.address) {
     return (
       <div className="mx-auto w-full max-w-[400px]" data-cy="pay-for-access-options">
-        <Button variant="primary" label="Connect wallet to buy access" onClick={login} />
+        <Button variant="primary" label="Sign in to buy access" onClick={login} />
       </div>
     );
   }
